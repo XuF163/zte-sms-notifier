@@ -10,6 +10,7 @@ const DEFAULT_CONFIG = {
   pollInterval: 60, // 秒（Chrome 120+ 已安装扩展最小约 30 秒；未打包扩展开发模式不受限）
   enabled: true,
   notifyOnSms: true,
+  markReadAfterNotify: true, // 写操作：通知后自动标记为已读
 };
 
 // 运行时状态
@@ -285,6 +286,31 @@ const RouterAPI = {
   async getSmsList(page = 0, count = 20) {
     const url = `${this.config.routerUrl}/goform/goform_get_cmd_process?isTest=false&cmd=sms_data_total&page=${page}&data_per_page=${count}&mem_store=1&tags=0&order_by=desc&_=${Date.now()}`;
     return this.fetchJson(url);
+  },
+
+  formatMsgId(ids) {
+    const list = Array.from(new Set((ids || []).map((x) => String(x ?? '').trim()).filter(Boolean)));
+    if (list.length === 0) return '';
+    return `${list.join(';')};`;
+  },
+
+  async markSmsRead(ids) {
+    const msg_id = this.formatMsgId(ids);
+    if (!msg_id) return null;
+
+    const url = `${this.config.routerUrl}/goform/goform_set_cmd_process`;
+    const formData = new URLSearchParams({
+      isTest: 'false',
+      goformId: 'SET_MSG_READ',
+      msg_id,
+      tag: '0',
+    });
+    const json = await this.fetchJson(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      body: formData,
+    });
+    return { msg_id, json };
   },
 
   decodeSmsContent(base64Content) {
@@ -606,11 +632,13 @@ async function pollSms({ force = false } = {}) {
       // 通知新短信
       let changed = false;
       let failed = 0;
+      const notifiedIds = [];
       for (const sms of smsItems) {
         if (state.lastNotifiedIds.has(sms.id)) continue;
         try {
           await NotificationManager.showSmsNotification(sms);
           state.lastNotifiedIds.add(sms.id);
+          notifiedIds.push(sms.id);
           changed = true;
         } catch (e) {
           failed++;
@@ -622,6 +650,35 @@ async function pollSms({ force = false } = {}) {
       if (changed) await saveRuntimeState();
       if (failed > 0) {
         void addLog('warn', 'some notifications failed', { failed, total: smsItems.length });
+      }
+
+      // 通知成功后自动标记为已读，避免重复推送
+      if (notifiedIds.length > 0 && RouterAPI.config?.markReadAfterNotify) {
+        try {
+          const r = await RouterAPI.markSmsRead(notifiedIds);
+          void addLog('info', 'mark sms read ok', {
+            msg_id: r?.msg_id,
+            result: r?.json?.result ?? r?.json,
+          });
+
+          // 刷新未读数量（让 popup 更快看到变化）
+          const after = await RouterAPI.getSmsStatus();
+          const unreadAfter = Number(after?.sms_unread_num ?? state.lastUnreadCount);
+          if (Number.isFinite(unreadAfter)) state.lastUnreadCount = unreadAfter;
+          state.lastCheckAt = Date.now();
+          void addLog('info', 'sms status after mark read', { unreadCount: state.lastUnreadCount });
+          chrome.runtime.sendMessage(
+            {
+              type: 'status',
+              unreadCount: state.lastUnreadCount,
+              timestamp: state.lastCheckAt,
+            },
+            () => void chrome.runtime.lastError
+          );
+        } catch (e) {
+          const errMsg = e?.message ?? String(e);
+          void addLog('error', 'mark sms read failed', { ids: notifiedIds, error: errMsg });
+        }
       }
     }
 

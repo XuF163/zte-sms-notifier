@@ -35,6 +35,7 @@ const els = {
   pollInterval: document.getElementById('poll-interval'),
   enabled: document.getElementById('enabled'),
   notifyOnSms: document.getElementById('notify-on-sms'),
+  markReadAfterNotify: document.getElementById('mark-read-after-notify'),
   btnSave: document.getElementById('btn-save'),
   btnReset: document.getElementById('btn-reset'),
   btnTest: document.getElementById('btn-test'),
@@ -52,6 +53,7 @@ const DEFAULT_CONFIG = {
   pollInterval: 60,
   enabled: true,
   notifyOnSms: true,
+  markReadAfterNotify: true,
 };
 
 async function init() {
@@ -62,6 +64,7 @@ async function init() {
   els.pollInterval.value = Math.max(10, Number(config.pollInterval) || DEFAULT_CONFIG.pollInterval);
   els.enabled.checked = config.enabled;
   els.notifyOnSms.checked = config.notifyOnSms;
+  els.markReadAfterNotify.checked = config.markReadAfterNotify;
 
   // 绑定事件
   els.btnSave.addEventListener('click', saveConfig);
@@ -93,6 +96,7 @@ async function saveConfig() {
     pollInterval: pollIntervalSeconds,
     enabled: els.enabled.checked,
     notifyOnSms: els.notifyOnSms.checked,
+    markReadAfterNotify: els.markReadAfterNotify.checked,
   };
 
   els.routerUrl.value = routerUrl;
@@ -117,6 +121,7 @@ async function resetConfig() {
   els.pollInterval.value = DEFAULT_CONFIG.pollInterval;
   els.enabled.checked = DEFAULT_CONFIG.enabled;
   els.notifyOnSms.checked = DEFAULT_CONFIG.notifyOnSms;
+  els.markReadAfterNotify.checked = DEFAULT_CONFIG.markReadAfterNotify;
 
   showToast('已重置为默认');
 }

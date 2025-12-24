@@ -46,6 +46,12 @@
         <input type="checkbox" id="notify-on-sms">
         <label for="notify-on-sms">有新短信时发送通知</label>
       </div>
+
+      <div class="form-group checkbox">
+        <input type="checkbox" id="mark-read-after-notify">
+        <label for="mark-read-after-notify">通知后自动标记为已读（写操作）</label>
+      </div>
+      <span class="hint">开启后，扩展会在推送通知成功后调用路由器接口把该短信标记为已读，避免重复推送</span>
     </div>
 
     <div class="card">
