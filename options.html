@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设置 - ZTE短信通知</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>⚙️ 设置</h1>
+    </header>
+
+    <div class="card">
+      <h2>路由器配置</h2>
+
+      <div class="form-group">
+        <label for="router-url">路由器地址</label>
+        <input type="text" id="router-url" placeholder="http://192.168.0.1">
+        <span class="hint">ZTE路由器通常为 192.168.0.1 或 192.168.1.1</span>
+      </div>
+
+      <div class="form-group">
+        <label for="router-password">路由器密码</label>
+        <input type="password" id="router-password" placeholder="输入密码">
+        <span class="hint">默认密码通常是 admin 或 271497</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>轮询设置</h2>
+
+      <div class="form-group">
+        <label for="poll-interval">轮询间隔 (秒)</label>
+        <input type="number" id="poll-interval" min="10" max="600" value="60">
+        <span class="hint">建议 10~120 秒；注意：已安装扩展在 Chrome 120+ 可能会被限制到 ≥30 秒</span>
+      </div>
+
+      <div class="form-group checkbox">
+        <input type="checkbox" id="enabled">
+        <label for="enabled">启用自动轮询</label>
+      </div>
+
+      <div class="form-group checkbox">
+        <input type="checkbox" id="notify-on-sms">
+        <label for="notify-on-sms">有新短信时发送通知</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>测试连接</h2>
+      <p class="info">保存设置后点击下方按钮测试连接</p>
+      <button id="btn-test" class="btn btn-primary">
+        <span class="icon">🔗</span>
+        <span class="text">测试连接</span>
+      </button>
+      <div id="test-result" class="test-result hidden"></div>
+    </div>
+
+    <div class="card">
+      <h2>测试通知</h2>
+      <p class="info">点击按钮发送一条系统通知，用于排查 Windows 通知是否正常</p>
+      <button id="btn-notify-test" class="btn btn-primary">
+        <span class="icon">🔔</span>
+        <span class="text">发送测试通知</span>
+      </button>
+      <div id="notify-result" class="test-result hidden"></div>
+    </div>
+
+    <div class="card">
+      <h2>日志</h2>
+      <p class="info">用于排查轮询/通知创建失败原因（最多保留 200 条）</p>
+      <div class="log-actions">
+        <button id="btn-log-refresh" class="btn btn-secondary">刷新日志</button>
+        <button id="btn-log-clear" class="btn btn-secondary">清空日志</button>
+      </div>
+      <pre id="log-output" class="log-output">（暂无日志）</pre>
+    </div>
+
+    <div class="card">
+      <h2>关于</h2>
+      <p class="info">
+        ZTE路由器短信通知 v1.0.0<br>
+        自动检查路由器未读短信并推送系统通知
+      </p>
+    </div>
+
+    <div class="actions">
+      <button id="btn-save" class="btn btn-primary">保存设置</button>
+      <button id="btn-reset" class="btn btn-secondary">重置为默认</button>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>短信通知</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 标题栏 -->
+    <header class="header">
+      <h1>ZTE路由器短信</h1>
+      <span id="status-badge" class="badge">加载中...</span>
+    </header>
+
+    <!-- 状态卡片 -->
+    <div class="card status-card">
+      <div class="sms-count">
+        <span class="count" id="unread-count">--</span>
+        <span class="label">未读短信</span>
+      </div>
+      <div class="last-check">
+        最近检查: <span id="last-check">--</span>
+      </div>
+    </div>
+
+    <!-- 控制按钮 -->
+    <div class="controls">
+      <button id="btn-toggle" class="btn btn-primary">
+        <span class="icon">⏸</span>
+        <span class="text">停止轮询</span>
+      </button>
+      <button id="btn-check" class="btn btn-secondary">
+        <span class="icon">🔄</span>
+        <span class="text">立即检查</span>
+      </button>
+      <button id="btn-reset" class="btn btn-secondary">
+        <span class="icon">🔔</span>
+        <span class="text">重置通知</span>
+      </button>
+    </div>
+
+    <!-- 错误信息 -->
+    <div id="error-container" class="error-container hidden">
+      <span class="error-icon">⚠️</span>
+      <span id="error-message"></span>
+    </div>
+
+    <!-- 底部链接 -->
+    <footer class="footer">
+      <a href="#" id="link-options">⚙️ 设置</a>
+      <a href="#" id="link-router" target="_blank">🔗 打开路由器</a>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

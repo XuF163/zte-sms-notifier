@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "ZTE路由器短信通知",
+  "version": "1.0.0",
+  "description": "读取ZTE路由器未读短信并通过浏览器系统通知提醒",
+  "permissions": [
+    "alarms",
+    "notifications",
+    "storage",
+    "offscreen",
+    "clipboardWrite"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icon16.png",
+        "icon48.png",
+        "icon128.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "http://192.168.0.1/*",
+    "http://192.168.1.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
