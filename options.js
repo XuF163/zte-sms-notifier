@@ -31,7 +31,7 @@ function normalizeRouterUrl(input) {
 // DOM元素
 const els = {
   routerUrl: document.getElementById('router-url'),
-  routerPassword: document.getElementById('router-password'),
+  devicePassword: document.getElementById('device-password'),
   pollInterval: document.getElementById('poll-interval'),
   enabled: document.getElementById('enabled'),
   notifyOnSms: document.getElementById('notify-on-sms'),
@@ -49,7 +49,10 @@ const els = {
 
 const DEFAULT_CONFIG = {
   routerUrl: 'http://192.168.0.1',
+  // 兼容：历史版本使用 routerPassword；新增 devicePassword 作为“设备密码”配置项
   routerPassword: '271497',
+  // devicePassword 为空时，自动回退到 routerPassword
+  devicePassword: '',
   pollInterval: 60,
   enabled: true,
   notifyOnSms: true,
@@ -60,7 +63,7 @@ async function init() {
   // 加载配置
   const config = await chrome.storage.sync.get(DEFAULT_CONFIG);
   els.routerUrl.value = normalizeRouterUrl(config.routerUrl) || String(config.routerUrl ?? '');
-  els.routerPassword.value = config.routerPassword;
+  els.devicePassword.value = config.devicePassword || config.routerPassword || DEFAULT_CONFIG.routerPassword;
   els.pollInterval.value = Math.max(10, Number(config.pollInterval) || DEFAULT_CONFIG.pollInterval);
   els.enabled.checked = config.enabled;
   els.notifyOnSms.checked = config.notifyOnSms;
@@ -92,7 +95,9 @@ async function saveConfig() {
 
   const config = {
     routerUrl,
-    routerPassword: els.routerPassword.value || DEFAULT_CONFIG.routerPassword,
+    devicePassword: els.devicePassword.value || DEFAULT_CONFIG.routerPassword,
+    // 写入旧键名，避免历史代码/缓存仍读取 routerPassword
+    routerPassword: els.devicePassword.value || DEFAULT_CONFIG.routerPassword,
     pollInterval: pollIntervalSeconds,
     enabled: els.enabled.checked,
     notifyOnSms: els.notifyOnSms.checked,
@@ -117,7 +122,7 @@ async function saveConfig() {
 
 async function resetConfig() {
   els.routerUrl.value = DEFAULT_CONFIG.routerUrl;
-  els.routerPassword.value = DEFAULT_CONFIG.routerPassword;
+  els.devicePassword.value = DEFAULT_CONFIG.routerPassword;
   els.pollInterval.value = DEFAULT_CONFIG.pollInterval;
   els.enabled.checked = DEFAULT_CONFIG.enabled;
   els.notifyOnSms.checked = DEFAULT_CONFIG.notifyOnSms;
@@ -191,7 +196,7 @@ async function clearLogs() {
 
 async function testConnection() {
   const url = normalizeRouterUrl(els.routerUrl.value);
-  const password = els.routerPassword.value;
+  const password = els.devicePassword.value;
 
   if (!url) {
     showTestResult('路由器地址格式不正确', false);

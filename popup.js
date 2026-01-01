@@ -25,7 +25,6 @@ async function init() {
   // 获取配置
   config = await chrome.storage.sync.get({
     routerUrl: 'http://192.168.0.1',
-    routerPassword: '271497',
     enabled: true,
   });
 

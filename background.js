@@ -6,7 +6,10 @@
 // ==================== 配置 ====================
 const DEFAULT_CONFIG = {
   routerUrl: 'http://192.168.0.1',
-  routerPassword: '271497',//自己改
+  // 兼容：历史版本使用 routerPassword；新增 devicePassword 作为“设备密码”配置项
+  routerPassword: '271497',
+  // devicePassword 为空时，自动回退到 routerPassword
+  devicePassword: '',
   pollInterval: 60, // 秒（Chrome 120+ 已安装扩展最小约 30 秒；未打包扩展开发模式不受限）
   enabled: true,
   notifyOnSms: true,
@@ -229,7 +232,22 @@ const RouterAPI = {
       routerUrl = `http://${routerUrl}`;
     }
     routerUrl = routerUrl.replace(/\/+$/, '');
-    this.config = { ...DEFAULT_CONFIG, ...(config ?? {}), routerUrl };
+
+    const merged = { ...DEFAULT_CONFIG, ...(config ?? {}), routerUrl };
+    const devicePassword = String(merged.devicePassword ?? '').trim();
+    const routerPassword = String(merged.routerPassword ?? '').trim();
+    const effectivePassword =
+      devicePassword ||
+      routerPassword ||
+      String(DEFAULT_CONFIG.routerPassword ?? '') ||
+      String(DEFAULT_CONFIG.devicePassword ?? '');
+
+    this.config = {
+      ...merged,
+      // 统一内部使用同一份密码，避免“旧键/新键”不一致导致登录失败
+      devicePassword: effectivePassword,
+      routerPassword: effectivePassword,
+    };
   },
 
   async fetchJson(url, init) {
