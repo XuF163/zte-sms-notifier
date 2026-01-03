@@ -50,7 +50,7 @@ const els = {
 const DEFAULT_CONFIG = {
   routerUrl: 'http://192.168.0.1',
   // 兼容：历史版本使用 routerPassword；新增 devicePassword 作为“设备密码”配置项
-  routerPassword: '271497',
+  routerPassword: '271497',//需要自己改
   // devicePassword 为空时，自动回退到 routerPassword
   devicePassword: '',
   pollInterval: 60,

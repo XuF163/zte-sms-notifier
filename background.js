@@ -10,7 +10,7 @@ const DEFAULT_CONFIG = {
   routerPassword: '271497',
   // devicePassword 为空时，自动回退到 routerPassword
   devicePassword: '',
-  pollInterval: 60, // 秒（Chrome 120+ 已安装扩展最小约 30 秒；未打包扩展开发模式不受限）
+  pollInterval: 10, // 秒（Chrome 120+ 已安装扩展最小约 30 秒；未打包扩展开发模式不受限）
   enabled: true,
   notifyOnSms: true,
   markReadAfterNotify: true, // 写操作：通知后自动标记为已读
